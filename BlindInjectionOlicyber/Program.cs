@@ -7,8 +7,8 @@ class Program
     static void Main()
     { 
         HttpClient client = new HttpClient();
-        client.DefaultRequestHeaders.Add("Cookie", "session=eyJjc3JmX3Rva2VuIjoiYmEyMDM5ZGUwNTBhNGQ0NjlmMDQyMzI3Zjc1MzA1NzYyNjUyYWU1NSJ9.Y7wa-g.Ezp-ILVOALJWolPgiqlZiyLGrzY");
-        client.DefaultRequestHeaders.Add("X-CSRF-TOKEN", "ImJhMjAzOWRlMDUwYTRkNDY5ZjA0MjMyN2Y3NTMwNTc2MjY1MmFlNTUi.Y8bfHg.znN82UVHwD9mA1cs_zfg3lURvKY");
+        client.DefaultRequestHeaders.Add("Cookie", "session=");
+        client.DefaultRequestHeaders.Add("X-CSRF-TOKEN", "");
 
         string dictionary = "0123456789abcdef";
         StringBuilder tracker = new StringBuilder();
